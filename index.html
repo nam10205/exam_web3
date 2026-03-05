@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Trắc Nghiệm</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <section id="auth-page" class="page active">
+            <div class="auth-container">
+                <div class="auth-box">
+                    <h2 id="auth-title">Đăng Nhập</h2>
+                    <form id="auth-form">
+                        <div id="register-fields" style="display: none;">
+                            <div class="input-group">
+                                <i class="fas fa-id-badge"></i>
+                                <input type="text" id="reg-id" placeholder="Mã Sinh Viên">
+                            </div>
+                            <div class="input-group">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="reg-name" placeholder="Họ và tên">
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <i class="fas fa-user-circle"></i>
+                            <input type="text" id="username" placeholder="Tên đăng nhập" required>
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="password" placeholder="Mật khẩu" required>
+                        </div>
+                        
+                        <div id="register-password-field" style="display: none;">
+                            <div class="input-group">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="re-password" placeholder="Xác nhận mật khẩu">
+                            </div>
+                        </div>
+
+                        <p id="auth-error" class="error-msg"></p>
+                        <button type="submit" class="btn btn-primary" id="btn-submit" style="width: 100%;">Đăng Nhập</button>
+                    </form>
+                    <p class="auth-switch" style="margin-top: 15px; font-size: 14px; text-align: center;">
+                        <span id="auth-switch-text">Chưa có tài khoản?</span> 
+                        <a href="#" id="auth-switch-link">Đăng ký</a>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <div id="student-layout" style="display: none;">
+            <section id="home-page" class="page">
+                <header>
+                    <div class="logo"><i class="fas fa-fire"></i>PTIT Quiz</div>
+                    <div class="user-info">
+                        <span id="display-name">Người dùng</span>
+                        <button class="btn btn-outline btn-logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
+                    </div>
+                </header>
+                <main class="container">
+                    <h3 class="section-title">Danh sách bài thi</h3>
+                    <div id="exam-list" class="grid-container"></div>
+                </main>
+            </section>
+
+            <section id="quiz-page" class="page">
+                <header class="quiz-header">
+                    <h2 id="quiz-title">Tên Bài Thi</h2>
+                    <div class="timer"><i class="fas fa-clock"></i> <span id="time-left">00:00</span></div>
+                    <button id="btn-submit-quiz" class="btn btn-warning">Nộp Bài</button>
+                </header>
+                <main class="container">
+                    <div id="questions-container"></div>
+                </main>
+            </section>
+
+            <section id="result-page" class="page">
+                <header>
+                    <div class="logo"><i class="fas fa-fire"></i>Kết Quả</div>
+                    <button id="btn-back-home" class="btn btn-primary">Về Trang Chủ</button>
+                </header>
+                <main class="container">
+                    <div class="result-summary">
+                        <h2>Kết Quả Bài Thi</h2>
+                        <div class="score-circle"><span id="score-text">0/10</span><small>Điểm số</small></div>
+                        <div class="statistics">
+                            <div class="stat-item correct"><i class="fas fa-check-circle"></i> Đúng: <span id="stat-correct">0</span></div>
+                            <div class="stat-item wrong"><i class="fas fa-times-circle"></i> Sai: <span id="stat-wrong">0</span></div>
+                            <div class="stat-item skip"><i class="fas fa-minus-circle"></i> Bỏ qua: <span id="stat-skip">0</span></div>
+                        </div>
+                    </div>
+                    <h3 class="section-title">Chi tiết bài làm</h3>
+                    <div id="review-container"></div>
+                </main>
+            </section>
+        </div>
+
+        <div id="admin-layout" style="display: none;">
+            <aside class="admin-sidebar">
+                <div class="logo"><i class="fas fa-user-shield"></i> Admin Panel</div>
+                <nav class="admin-nav">
+                    <a href="#" onclick="showAdminPage('admin-dashboard')" id="nav-admin-dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                    <a href="#" onclick="showAdminPage('admin-exams')" id="nav-admin-exams" class="active"><i class="fas fa-file-alt"></i> Quản lý Kỳ thi</a>
+                    <a href="#" onclick="showAdminPage('admin-users')" id="nav-admin-users"><i class="fas fa-users"></i> Quản lý Sinh viên</a>
+                    <a href="#" onclick="showAdminPage('admin-stats')" id="nav-admin-stats"><i class="fas fa-chart-bar"></i> Thống kê</a>
+                    <a href="#" onclick="showAdminPage('admin-student-detail')" id="nav-admin-student-detail"><i class="fas fa-search"></i> Tra cứu Kết quả</a>
+                </nav>
+                <button class="btn btn-outline btn-logout" style="margin: 20px; width: calc(100% - 40px); border-color: rgba(255,255,255,0.3);"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
+            </aside>
+
+            <main class="admin-main">
+                <section id="admin-dashboard" class="admin-page">
+                    <h2 class="section-title">Tổng quan hệ thống</h2>
+                    <div class="grid-container" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 30px;">
+                        <div class="stat-card">
+                            <i class="fas fa-file-alt"></i>
+                            <div><h3>Tổng Kỳ Thi</h3><p id="dash-total-exams">0</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-users"></i>
+                            <div><h3>Tổng Sinh Viên</h3><p id="dash-total-users">0</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-check-double"></i>
+                            <div><h3>Lượt thi đã nộp</h3><p id="dash-total-attempts">124 (Mock)</p></div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="admin-exams" class="admin-page active">
+                    <div class="admin-header-flex">
+                        <h2 class="section-title">Quản lý Kỳ Thi</h2>
+                        <button class="btn btn-primary" onclick="openExamForm()"><i class="fas fa-plus"></i> Tạo Kỳ Thi Mới</button>
+                    </div>
+                    <table class="admin-table">
+                        <thead><tr><th>Tên Kỳ Thi</th><th>Loại</th><th>Trạng thái</th><th>Thời gian</th><th>Số câu</th><th>Thao tác</th></tr></thead>
+                        <tbody id="admin-exam-tbody"></tbody>
+                    </table>
+                </section>
+
+                <section id="admin-exam-form" class="admin-page">
+                    <div class="admin-header-flex">
+                        <h2 class="section-title" id="form-exam-title">Tạo Kỳ Thi Mới</h2>
+                        <div>
+                            <button class="btn btn-outline" style="color:#333; border-color:#ccc;" onclick="showAdminPage('admin-exams')">Hủy</button>
+                            <button class="btn btn-primary" onclick="saveExam()"><i class="fas fa-save"></i> Lưu Bài Thi</button>
+                        </div>
+                    </div>
+                    <div class="form-card" style="margin-bottom: 20px;">
+                        <h3>Thông tin chung</h3>
+                        <div style="display: flex; gap: 15px; margin-top: 15px;">
+                            <input type="text" id="input-exam-title" placeholder="Tên bài thi..." class="admin-input" style="flex: 2;">
+                            <select id="input-exam-type" class="admin-input" style="flex: 1;"><option value="Luyện tập">Luyện tập</option><option value="Giữa kỳ">Giữa kỳ</option><option value="Cuối kỳ">Cuối kỳ</option></select>
+                            <select id="input-exam-status" class="admin-input" style="flex: 1;"><option value="free">Truy cập tự do</option><option value="scheduled">Có thời hạn</option></select>
+                            <input type="number" id="input-exam-time" placeholder="Phút" class="admin-input" style="flex: 0.5;" min="1">
+                        </div>
+                    </div>
+                    <div class="form-card">
+                        <div class="admin-header-flex" style="margin-bottom: 10px;">
+                            <h3>Danh sách Câu hỏi</h3>
+                            <div>
+                                <button class="btn btn-warning btn-sm" onclick="importExcelMock()"><i class="fas fa-file-excel"></i> Nhập từ Excel</button>
+                                <button class="btn btn-primary btn-sm" onclick="addQuestionBuilder()"><i class="fas fa-plus"></i> Thêm Câu Hỏi</button>
+                            </div>
+                        </div>
+                        <div id="questions-builder-container"></div>
+                    </div>
+                </section>
+
+                <section id="admin-users" class="admin-page">
+                    <div class="admin-header-flex">
+                        <h2 class="section-title">Quản lý Sinh Viên</h2>
+                        <button class="btn btn-primary" onclick="openUserForm()"><i class="fas fa-user-plus"></i> Thêm Sinh Viên</button>
+                    </div>
+                    <table class="admin-table">
+                        <thead><tr><th>MSSV</th><th>Họ Tên</th><th>Tên đăng nhập</th><th>Lượt thi</th><th>Thao tác</th></tr></thead>
+                        <tbody id="admin-user-tbody"></tbody>
+                    </table>
+                </section>
+
+                <section id="admin-user-form" class="admin-page">
+                    <div class="admin-header-flex">
+                        <h2 class="section-title" id="form-user-title">Thêm Sinh Viên</h2>
+                    </div>
+                    <div class="form-card" style="max-width: 500px;">
+                        <input type="hidden" id="input-u-oldusername">
+                        <input type="text" id="input-u-id" placeholder="Mã sinh viên (VD: SV005)" class="admin-input">
+                        <input type="text" id="input-u-name" placeholder="Họ và tên" class="admin-input">
+                        <input type="text" id="input-u-username" placeholder="Tên đăng nhập" class="admin-input">
+                        <input type="password" id="input-u-password" placeholder="Mật khẩu" class="admin-input">
+                        <div style="display:flex; gap:10px; margin-top: 10px;">
+                            <button class="btn btn-primary" onclick="saveUser()" style="flex:1">Lưu</button>
+                            <button class="btn btn-outline" style="color:#333; border-color:#ccc; flex:1" onclick="showAdminPage('admin-users')">Hủy</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="admin-stats" class="admin-page">
+                    <div class="admin-header-flex">
+                        <h2 class="section-title">Thống Kê Tổng Hợp (Dữ liệu mẫu)</h2>
+                        <div>
+                            <button class="btn btn-warning" onclick="alert('Đã xuất báo cáo ra file Excel!')"><i class="fas fa-file-excel"></i> Xuất Excel</button>
+                            <button class="btn btn-outline" style="color:var(--primary-red); border-color:var(--primary-red)" onclick="window.print()"><i class="fas fa-file-pdf"></i> Xuất PDF</button>
+                        </div>
+                    </div>
+                    <div class="filter-box" style="margin-bottom: 20px; display: flex; gap: 15px;">
+                        <select class="admin-input" style="width: 200px;"><option>Tất cả kỳ thi</option><option>HTML Cơ bản</option></select>
+                        <input type="date" class="admin-input" style="width: 200px;">
+                    </div>
+                    <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: var(--shadow); margin-bottom: 30px;">
+                        <canvas id="scoreChart" height="80"></canvas>
+                    </div>
+                    <table class="admin-table">
+                        <thead><tr><th>Tên Kỳ Thi</th><th>Tổng lượt thi</th><th>Tỷ lệ hoàn thành</th><th>Điểm TB</th></tr></thead>
+                        <tbody>
+                            <tr><td>Bài tập Demo: HTML Cơ bản</td><td>150</td><td>98%</td><td>8.2 / 10</td></tr>
+                            <tr><td>Giữa kỳ: Javascript</td><td>120</td><td>95%</td><td>7.5 / 10</td></tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <section id="admin-student-detail" class="admin-page">
+                    <h2 class="section-title">Tra cứu Kết Quả Sinh Viên (Dữ liệu mẫu)</h2>
+                    <div style="margin-bottom: 20px; max-width: 400px; position: relative;">
+                        <i class="fas fa-search" style="position: absolute; left: 15px; top: 12px; color: #888;"></i>
+                        <input type="text" class="admin-input" placeholder="Nhập tên hoặc MSSV..." style="padding-left: 40px; width: 100%;">
+                    </div>
+                    <div class="form-card">
+                        <h3>Sinh viên: Nguyễn Văn A (SV001)</h3>
+                        <button class="btn btn-outline" style="color:var(--primary-red); border-color:var(--primary-red); margin-top: 10px;" onclick="window.print()"><i class="fas fa-print"></i> In bảng điểm</button>
+                        <h4 style="margin-top: 20px; margin-bottom: 10px;">Lịch sử thi:</h4>
+                        <table class="admin-table">
+                            <thead><tr><th>Ngày thi</th><th>Kỳ thi</th><th>Trạng thái</th><th>Điểm số</th><th>Chi tiết</th></tr></thead>
+                            <tbody>
+                                <tr><td>10/10/2023</td><td>HTML Cơ bản</td><td><span class="badge free">Hoàn thành</span></td><td><strong>9.0</strong></td><td><button class="btn btn-primary btn-sm" onclick="alert('Chi tiết: Câu 1 (Đúng), Câu 2 (Đúng). Giải thích: Đáp án đúng vì...')">Xem chi tiết</button></td></tr>
+                                <tr><td>15/10/2023</td><td>Cuối kỳ: ReactJS</td><td><span class="badge scheduled" style="background:#ffebee; color:var(--wrong-color)">Chưa đạt</span></td><td><strong>4.0</strong></td><td><button class="btn btn-primary btn-sm" onclick="alert('Chi tiết bài thi.')">Xem chi tiết</button></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
