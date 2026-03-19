@@ -5,7 +5,7 @@
     --shadow: 0 4px 12px rgba(0,0,0,0.08); --radius: 12px;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Google Sans', sans-serif; }
 body { background-color: var(--bg-color); color: var(--text-color); }
 .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
 
