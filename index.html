@@ -1,21 +1,393 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ Thống Trắc Nghiệm</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ===== RESULT ===== */
+        .result-detail {
+            margin-top: 24px;
+        }
+
+        .result-question {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 14px;
+        }
+
+        .result-question p {
+            margin: 0 0 10px;
+            font-weight: 600;
+        }
+
+        .result-choice {
+            display: block;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin: 4px 0;
+            font-size: 14px;
+        }
+
+        .result-choice.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .result-choice.wrong {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .result-choice.unselected {
+            background: #f8f9fa;
+            color: #555;
+            border: 1px solid #dee2e6;
+        }
+
+        .result-badge {
+            display: inline-block;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: 8px;
+        }
+
+        .badge-correct {
+            background: #28a745;
+            color: #fff;
+        }
+
+        .badge-wrong {
+            background: #dc3545;
+            color: #fff;
+        }
+
+        .badge-skip {
+            background: #6c757d;
+            color: #fff;
+        }
+
+        .btn-back-home {
+            margin-top: 20px;
+        }
+
+        /* ===== ADMIN ===== */
+        #admin-layout {
+            display: none;
+            min-height: 100vh;
+            background: #f4f6fb;
+        }
+
+        #admin-layout.show {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .admin-sidebar {
+            width: 220px;
+            background: #c0392b;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            padding: 24px 0;
+            min-height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        .admin-sidebar .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 24px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 16px;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .admin-sidebar .logo img {
+            height: 36px;
+            width: auto;
+            border-radius: 6px;
+        }
+
+        .admin-nav a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all .2s;
+        }
+
+        .admin-nav a:hover,
+        .admin-nav a.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
+        .admin-main {
+            margin-left: 220px;
+            padding: 32px;
+            flex: 1;
+        }
+
+        .admin-page {
+            display: none;
+        }
+
+        .admin-page.active {
+            display: block;
+        }
+
+        .admin-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .admin-topbar h2 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .stat-cards {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px 28px;
+            flex: 1;
+            min-width: 140px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .07);
+            border-left: 4px solid #c0392b;
+        }
+
+        .stat-card h3 {
+            margin: 0 0 8px;
+            font-size: 13px;
+            color: #888;
+        }
+
+        .stat-card .stat-num {
+            font-size: 28px;
+            font-weight: 700;
+            color: #c0392b;
+        }
+
+        .admin-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .07);
+            margin-bottom: 24px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        th {
+            background: #fff5f5;
+            font-weight: 600;
+            color: #c0392b;
+        }
+
+        .admin-input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .admin-input:focus {
+            outline: none;
+            border-color: #c0392b;
+        }
+
+        .qb-item {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 12px;
+            background: #fafafa;
+        }
+
+        .qb-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .qb-option-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .qb-option-row input[type="text"] {
+            flex: 1;
+        }
+
+        .btn {
+            padding: 8px 18px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .btn-sm {
+            padding: 5px 12px;
+            font-size: 12px;
+        }
+
+        .btn-primary {
+            background: #c0392b;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #a93226;
+        }
+
+        .btn-warning {
+            background: #e67e22;
+            color: #fff;
+        }
+
+        .btn-danger {
+            background: #c0392b;
+            color: #fff;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: #fff;
+        }
+
+        .score-pill {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .score-pill.good {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .score-pill.mid {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .score-pill.bad {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .chart-wrapper {
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        .chart-stats {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .chart-stat {
+            background: #fff5f5;
+            border-radius: 10px;
+            padding: 14px 20px;
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .chart-stat h4 {
+            margin: 0 0 6px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .chart-stat .val {
+            font-size: 22px;
+            font-weight: 700;
+            color: #c0392b;
+        }
+
+        /* Logo trong header student */
+        header .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        header .logo img {
+            height: 32px;
+            width: auto;
+            border-radius: 4px;
+        }
+    </style>
 </head>
+
 <body>
     <div id="app">
+
+        <!-- ===== AUTH ===== -->
         <section id="auth-page" class="page active">
             <div class="auth-container">
                 <div class="auth-box">
+                    <div style="text-align:center; margin-bottom:16px;">
+                        <img src="logo.jpg" style="height:60px; width:auto; border-radius:8px;">
+                    </div>
                     <h2 id="auth-title">Đăng Nhập</h2>
                     <form id="auth-form">
-                        <div id="register-fields" style="display: none;">
+                        <div id="register-fields" style="display:none;">
                             <div class="input-group">
                                 <i class="fas fa-id-badge"></i>
                                 <input type="text" id="reg-id" placeholder="Mã Sinh Viên">
@@ -25,7 +397,6 @@
                                 <input type="text" id="reg-name" placeholder="Họ và tên">
                             </div>
                         </div>
-
                         <div class="input-group">
                             <i class="fas fa-user-circle"></i>
                             <input type="text" id="username" placeholder="Tên đăng nhập" required>
@@ -34,32 +405,35 @@
                             <i class="fas fa-lock"></i>
                             <input type="password" id="password" placeholder="Mật khẩu" required>
                         </div>
-                        
-                        <div id="register-password-field" style="display: none;">
-                            <div class="input-group">
-                                <i class="fas fa-lock"></i>
-                                <input type="password" id="re-password" placeholder="Xác nhận mật khẩu">
-                            </div>
-                        </div>
-
                         <p id="auth-error" class="error-msg"></p>
-                        <button type="submit" class="btn btn-primary" id="btn-submit" style="width: 100%;">Đăng Nhập</button>
+                        <button type="submit" class="btn btn-primary" id="btn-submit" style="width:100%;">Đăng
+                            Nhập</button>
                     </form>
-                    <p class="auth-switch" style="margin-top: 15px; font-size: 14px; text-align: center;">
-                        <span id="auth-switch-text">Chưa có tài khoản?</span> 
-                        <a href="#" id="auth-switch-link">Đăng ký</a>
+                    <div id="register-password-field" style="display:none;">
+                        <div class="input-group" style="margin-top:10px;">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="re-password" placeholder="Nhập lại mật khẩu">
+                        </div>
+                    </div>
+                    <p style="margin-top:16px; text-align:center; font-size:14px;">
+                        <span id="auth-switch-text">Chưa có tài khoản?</span>
+                        <a href="#" id="auth-switch-link" style="color:#c0392b;">Đăng ký</a>
                     </p>
                 </div>
             </div>
         </section>
 
-        <div id="student-layout" style="display: none;">
+        <!-- ===== STUDENT ===== -->
+        <div id="student-layout" style="display:none;">
             <section id="home-page" class="page">
                 <header>
-                    <div class="logo"><i class="fas fa-fire"></i>PTIT Quiz</div>
+                    <div class="logo">
+                        <img src="logo.jpg" alt="Logo">
+                        PTIT Quiz
+                    </div>
                     <div class="user-info">
                         <span id="display-name">Người dùng</span>
-                        <button class="btn btn-outline btn-logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
+                        <button class="btn btn-logout btn-sm" style="margin-left:12px;">Đăng xuất</button>
                     </div>
                 </header>
                 <main class="container">
@@ -71,7 +445,7 @@
             <section id="quiz-page" class="page">
                 <header class="quiz-header">
                     <h2 id="quiz-title">Tên Bài Thi</h2>
-                    <div class="timer"><i class="fas fa-clock"></i> <span id="time-left">00:00</span></div>
+                    <div class="timer"><i class="fas fa-clock"></i><span id="time-left">00:00</span></div>
                     <button id="btn-submit-quiz" class="btn btn-warning">Nộp Bài</button>
                 </header>
                 <main class="container">
@@ -81,171 +455,233 @@
 
             <section id="result-page" class="page">
                 <header>
-                    <div class="logo"><i class="fas fa-fire"></i>Kết Quả</div>
-                    <button id="btn-back-home" class="btn btn-primary">Về Trang Chủ</button>
+                    <div class="logo">
+                        <img src="logo.jpg" alt="Logo">
+                        Kết Quả
+                    </div>
                 </header>
                 <main class="container">
                     <div class="result-summary">
                         <h2>Kết Quả Bài Thi</h2>
-                        <div class="score-circle"><span id="score-text">0/10</span><small>Điểm số</small></div>
-                        <div class="statistics">
-                            <div class="stat-item correct"><i class="fas fa-check-circle"></i> Đúng: <span id="stat-correct">0</span></div>
-                            <div class="stat-item wrong"><i class="fas fa-times-circle"></i> Sai: <span id="stat-wrong">0</span></div>
-                            <div class="stat-item skip"><i class="fas fa-minus-circle"></i> Bỏ qua: <span id="stat-skip">0</span></div>
+                        <div class="score-circle">
+                            <span id="score-text">0</span>
+                            <small>Điểm số</small>
                         </div>
+                        <p id="score-detail" style="margin-top:8px; color:#555;"></p>
                     </div>
-                    <h3 class="section-title">Chi tiết bài làm</h3>
-                    <div id="review-container"></div>
+                    <div class="result-detail">
+                        <h3>Chi tiết đáp án</h3>
+                        <div id="result-detail-container"></div>
+                    </div>
+                    <button class="btn btn-primary btn-back-home" onclick="showStudentPage('home-page')">← Quay về trang
+                        chủ</button>
                 </main>
             </section>
         </div>
 
-        <div id="admin-layout" style="display: none;">
-            <aside class="admin-sidebar">
-                <div class="logo"><i class="fas fa-user-shield"></i> Admin Panel</div>
-                <nav class="admin-nav">
-                    <a href="#" onclick="showAdminPage('admin-dashboard')" id="nav-admin-dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-                    <a href="#" onclick="showAdminPage('admin-exams')" id="nav-admin-exams" class="active"><i class="fas fa-file-alt"></i> Quản lý Kỳ thi</a>
-                    <a href="#" onclick="showAdminPage('admin-users')" id="nav-admin-users"><i class="fas fa-users"></i> Quản lý Sinh viên</a>
-                    <a href="#" onclick="showAdminPage('admin-stats')" id="nav-admin-stats"><i class="fas fa-chart-bar"></i> Thống kê</a>
-                    <a href="#" onclick="showAdminPage('admin-student-detail')" id="nav-admin-student-detail"><i class="fas fa-search"></i> Tra cứu Kết quả</a>
-                </nav>
-                <button class="btn btn-outline btn-logout" style="margin: 20px; width: calc(100% - 40px); border-color: rgba(255,255,255,0.3);"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
-            </aside>
+        <!-- ===== ADMIN ===== -->
+        <div id="admin-layout">
+            <nav class="admin-sidebar">
+                <div class="logo">
+                    <img src="logo.jpg" alt="Logo">
+                    Admin
+                </div>
+                <div class="admin-nav">
+                    <a href="#" id="nav-admin-dashboard" onclick="showAdminPage('admin-dashboard');return false;">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <a href="#" id="nav-admin-exams" onclick="showAdminPage('admin-exams');return false;">
+                        <i class="fas fa-file-alt"></i> Quản lý đề thi
+                    </a>
+                    <a href="#" id="nav-admin-users" onclick="showAdminPage('admin-users');return false;">
+                        <i class="fas fa-users"></i> Quản lý sinh viên
+                    </a>
+                    <a href="#" id="nav-admin-stats" onclick="showAdminPage('admin-stats');return false;">
+                        <i class="fas fa-chart-bar"></i> Thống kê
+                    </a>
+                    <a href="#" id="nav-admin-search" onclick="showAdminPage('admin-search');return false;">
+                        <i class="fas fa-search"></i> Tra cứu
+                    </a>
+                </div>
+                <div style="margin-top:auto; padding:24px;">
+                    <button class="btn btn-logout"
+                        style="width:100%; background:rgba(255,255,255,0.15); color:#fff; border:none; cursor:pointer;">
+                        <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                    </button>
+                </div>
+            </nav>
 
-            <main class="admin-main">
-                <section id="admin-dashboard" class="admin-page">
-                    <h2 class="section-title">Tổng quan hệ thống</h2>
-                    <div class="grid-container" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 30px;">
+            <div class="admin-main">
+
+                <!-- Dashboard -->
+                <div id="admin-dashboard" class="admin-page">
+                    <div class="admin-topbar">
+                        <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+                    </div>
+                    <div class="stat-cards">
                         <div class="stat-card">
-                            <i class="fas fa-file-alt"></i>
-                            <div><h3>Tổng Kỳ Thi</h3><p id="dash-total-exams">0</p></div>
+                            <h3>Tổng đề thi</h3>
+                            <div class="stat-num" id="dash-total-exams">—</div>
                         </div>
                         <div class="stat-card">
-                            <i class="fas fa-users"></i>
-                            <div><h3>Tổng Sinh Viên</h3><p id="dash-total-users">0</p></div>
+                            <h3>Tổng sinh viên</h3>
+                            <div class="stat-num" id="dash-total-users">—</div>
                         </div>
                         <div class="stat-card">
-                            <i class="fas fa-check-double"></i>
-                            <div><h3>Lượt thi đã nộp</h3><p id="dash-total-attempts">124 (Mock)</p></div>
+                            <h3>Lượt làm bài</h3>
+                            <div class="stat-num" id="dash-total-attempts">—</div>
                         </div>
                     </div>
-                </section>
+                </div>
 
-                <section id="admin-exams" class="admin-page active">
-                    <div class="admin-header-flex">
-                        <h2 class="section-title">Quản lý Kỳ Thi</h2>
-                        <button class="btn btn-primary" onclick="openExamForm()"><i class="fas fa-plus"></i> Tạo Kỳ Thi Mới</button>
+                <!-- Quản lý đề thi -->
+                <div id="admin-exams" class="admin-page">
+                    <div class="admin-topbar">
+                        <h2><i class="fas fa-file-alt"></i> Quản lý đề thi</h2>
+                        <button class="btn btn-primary" onclick="openExamForm()">+ Tạo đề mới</button>
                     </div>
-                    <table class="admin-table">
-                        <thead><tr><th>Tên Kỳ Thi</th><th>Loại</th><th>Trạng thái</th><th>Thời gian</th><th>Số câu</th><th>Thao tác</th></tr></thead>
-                        <tbody id="admin-exam-tbody"></tbody>
-                    </table>
-                </section>
-
-                <section id="admin-exam-form" class="admin-page">
-                    <div class="admin-header-flex">
-                        <h2 class="section-title" id="form-exam-title">Tạo Kỳ Thi Mới</h2>
-                        <div>
-                            <button class="btn btn-outline" style="color:#333; border-color:#ccc;" onclick="showAdminPage('admin-exams')">Hủy</button>
-                            <button class="btn btn-primary" onclick="saveExam()"><i class="fas fa-save"></i> Lưu Bài Thi</button>
-                        </div>
-                    </div>
-                    <div class="form-card" style="margin-bottom: 20px;">
-                        <h3>Thông tin chung</h3>
-                        <div style="display: flex; gap: 15px; margin-top: 15px;">
-                            <input type="text" id="input-exam-title" placeholder="Tên bài thi..." class="admin-input" style="flex: 2;">
-                            <select id="input-exam-type" class="admin-input" style="flex: 1;"><option value="Luyện tập">Luyện tập</option><option value="Giữa kỳ">Giữa kỳ</option><option value="Cuối kỳ">Cuối kỳ</option></select>
-                            <select id="input-exam-status" class="admin-input" style="flex: 1;"><option value="free">Truy cập tự do</option><option value="scheduled">Có thời hạn</option></select>
-                            <input type="number" id="input-exam-time" placeholder="Phút" class="admin-input" style="flex: 0.5;" min="1">
-                        </div>
-                    </div>
-                    <div class="form-card">
-                        <div class="admin-header-flex" style="margin-bottom: 10px;">
-                            <h3>Danh sách Câu hỏi</h3>
-                            <div>
-                                <button class="btn btn-warning btn-sm" onclick="importExcelMock()"><i class="fas fa-file-excel"></i> Nhập từ Excel</button>
-                                <button class="btn btn-primary btn-sm" onclick="addQuestionBuilder()"><i class="fas fa-plus"></i> Thêm Câu Hỏi</button>
-                            </div>
-                        </div>
-                        <div id="questions-builder-container"></div>
-                    </div>
-                </section>
-
-                <section id="admin-users" class="admin-page">
-                    <div class="admin-header-flex">
-                        <h2 class="section-title">Quản lý Sinh Viên</h2>
-                        <button class="btn btn-primary" onclick="openUserForm()"><i class="fas fa-user-plus"></i> Thêm Sinh Viên</button>
-                    </div>
-                    <table class="admin-table">
-                        <thead><tr><th>MSSV</th><th>Họ Tên</th><th>Tên đăng nhập</th><th>Lượt thi</th><th>Thao tác</th></tr></thead>
-                        <tbody id="admin-user-tbody"></tbody>
-                    </table>
-                </section>
-
-                <section id="admin-user-form" class="admin-page">
-                    <div class="admin-header-flex">
-                        <h2 class="section-title" id="form-user-title">Thêm Sinh Viên</h2>
-                    </div>
-                    <div class="form-card" style="max-width: 500px;">
-                        <input type="hidden" id="input-u-oldusername">
-                        <input type="text" id="input-u-id" placeholder="Mã sinh viên (VD: SV005)" class="admin-input">
-                        <input type="text" id="input-u-name" placeholder="Họ và tên" class="admin-input">
-                        <input type="text" id="input-u-username" placeholder="Tên đăng nhập" class="admin-input">
-                        <input type="password" id="input-u-password" placeholder="Mật khẩu" class="admin-input">
-                        <div style="display:flex; gap:10px; margin-top: 10px;">
-                            <button class="btn btn-primary" onclick="saveUser()" style="flex:1">Lưu</button>
-                            <button class="btn btn-outline" style="color:#333; border-color:#ccc; flex:1" onclick="showAdminPage('admin-users')">Hủy</button>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="admin-stats" class="admin-page">
-                    <div class="admin-header-flex">
-                        <h2 class="section-title">Thống Kê Tổng Hợp (Dữ liệu mẫu)</h2>
-                        <div>
-                            <button class="btn btn-warning" onclick="alert('Đã xuất báo cáo ra file Excel!')"><i class="fas fa-file-excel"></i> Xuất Excel</button>
-                            <button class="btn btn-outline" style="color:var(--primary-red); border-color:var(--primary-red)" onclick="window.print()"><i class="fas fa-file-pdf"></i> Xuất PDF</button>
-                        </div>
-                    </div>
-                    <div class="filter-box" style="margin-bottom: 20px; display: flex; gap: 15px;">
-                        <select class="admin-input" style="width: 200px;"><option>Tất cả kỳ thi</option><option>HTML Cơ bản</option></select>
-                        <input type="date" class="admin-input" style="width: 200px;">
-                    </div>
-                    <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: var(--shadow); margin-bottom: 30px;">
-                        <canvas id="scoreChart" height="80"></canvas>
-                    </div>
-                    <table class="admin-table">
-                        <thead><tr><th>Tên Kỳ Thi</th><th>Tổng lượt thi</th><th>Tỷ lệ hoàn thành</th><th>Điểm TB</th></tr></thead>
-                        <tbody>
-                            <tr><td>Bài tập Demo: HTML Cơ bản</td><td>150</td><td>98%</td><td>8.2 / 10</td></tr>
-                            <tr><td>Giữa kỳ: Javascript</td><td>120</td><td>95%</td><td>7.5 / 10</td></tr>
-                        </tbody>
-                    </table>
-                </section>
-
-                <section id="admin-student-detail" class="admin-page">
-                    <h2 class="section-title">Tra cứu Kết Quả Sinh Viên (Dữ liệu mẫu)</h2>
-                    <div style="margin-bottom: 20px; max-width: 400px; position: relative;">
-                        <i class="fas fa-search" style="position: absolute; left: 15px; top: 12px; color: #888;"></i>
-                        <input type="text" class="admin-input" placeholder="Nhập tên hoặc MSSV..." style="padding-left: 40px; width: 100%;">
-                    </div>
-                    <div class="form-card">
-                        <h3>Sinh viên: Nguyễn Văn A (SV001)</h3>
-                        <button class="btn btn-outline" style="color:var(--primary-red); border-color:var(--primary-red); margin-top: 10px;" onclick="window.print()"><i class="fas fa-print"></i> In bảng điểm</button>
-                        <h4 style="margin-top: 20px; margin-bottom: 10px;">Lịch sử thi:</h4>
-                        <table class="admin-table">
-                            <thead><tr><th>Ngày thi</th><th>Kỳ thi</th><th>Trạng thái</th><th>Điểm số</th><th>Chi tiết</th></tr></thead>
-                            <tbody>
-                                <tr><td>10/10/2023</td><td>HTML Cơ bản</td><td><span class="badge free">Hoàn thành</span></td><td><strong>9.0</strong></td><td><button class="btn btn-primary btn-sm" onclick="alert('Chi tiết: Câu 1 (Đúng), Câu 2 (Đúng). Giải thích: Đáp án đúng vì...')">Xem chi tiết</button></td></tr>
-                                <tr><td>15/10/2023</td><td>Cuối kỳ: ReactJS</td><td><span class="badge scheduled" style="background:#ffebee; color:var(--wrong-color)">Chưa đạt</span></td><td><strong>4.0</strong></td><td><button class="btn btn-primary btn-sm" onclick="alert('Chi tiết bài thi.')">Xem chi tiết</button></td></tr>
+                    <div class="admin-card">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tên đề</th>
+                                    <th>Loại</th>
+                                    <th>Số câu</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-exam-tbody">
+                                <tr>
+                                    <td colspan="4" style="text-align:center;">Đang tải...</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
-                </section>
-            </main>
+                </div>
+
+                <!-- Form tạo/sửa đề -->
+                <div id="admin-exam-form" class="admin-page">
+                    <div class="admin-topbar">
+                        <h2 id="form-exam-title">Tạo Đề Thi Mới</h2>
+                        <button class="btn btn-secondary" onclick="showAdminPage('admin-exams')">← Quay lại</button>
+                    </div>
+                    <div class="admin-card">
+                        <label>Tên đề thi</label>
+                        <input type="text" id="input-exam-title" class="admin-input" placeholder="Nhập tên đề...">
+                        <label>Loại đề</label>
+                        <select id="input-exam-type" class="admin-input">
+                            <option value="1">Trắc nghiệm</option>
+                            <option value="2">Tự luận</option>
+                            <option value="3">Hỗn hợp</option>
+                        </select>
+                        <label>Thời gian (phút)</label>
+                        <input type="number" id="input-exam-time" class="admin-input" value="15">
+                    </div>
+                    <div class="admin-card">
+                        <div
+                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                            <h3 style="margin:0;">Câu hỏi</h3>
+                            <button class="btn btn-primary btn-sm" onclick="addQuestionBuilder()">+ Thêm câu</button>
+                        </div>
+                        <div id="questions-builder-container"></div>
+                    </div>
+                    <button class="btn btn-primary" onclick="saveExam()"
+                        style="width:100%; padding:14px; font-size:16px;">
+                        <i class="fas fa-save"></i> Lưu đề thi
+                    </button>
+                </div>
+
+                <!-- Quản lý sinh viên -->
+                <div id="admin-users" class="admin-page">
+                    <div class="admin-topbar">
+                        <h2><i class="fas fa-users"></i> Quản lý sinh viên</h2>
+                    </div>
+                    <div class="admin-card">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>MSV</th>
+                                    <th>Họ tên</th>
+                                    <th>Tên đăng nhập</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-user-tbody">
+                                <tr>
+                                    <td colspan="4" style="text-align:center;">Đang tải...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Thống kê — Chart.js -->
+                <div id="admin-stats" class="admin-page">
+                    <div class="admin-topbar">
+                        <h2><i class="fas fa-chart-bar"></i> Thống kê điểm số</h2>
+                    </div>
+                    <div class="chart-stats">
+                        <div class="chart-stat">
+                            <h4>Tổng lượt thi</h4>
+                            <div class="val" id="stat-total-attempts">—</div>
+                        </div>
+                        <div class="chart-stat">
+                            <h4>Điểm trung bình</h4>
+                            <div class="val" id="stat-avg-score">—</div>
+                        </div>
+                        <div class="chart-stat">
+                            <h4>Điểm cao nhất</h4>
+                            <div class="val" id="stat-highest">—</div>
+                        </div>
+                        <div class="chart-stat">
+                            <h4>Điểm thấp nhất</h4>
+                            <div class="val" id="stat-lowest">—</div>
+                        </div>
+                    </div>
+                    <div class="admin-card">
+                        <h3 style="margin:0 0 20px;">Phân phối điểm số</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="scoreChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tra cứu -->
+                <div id="admin-search" class="admin-page">
+                    <div class="admin-topbar">
+                        <h2><i class="fas fa-search"></i> Tra cứu kết quả</h2>
+                    </div>
+                    <div class="admin-card">
+                        <div style="display:flex; gap:10px; align-items:center; margin-bottom:16px;">
+                            <input type="text" id="search-filter" class="admin-input"
+                                placeholder="Lọc theo MSV, họ tên hoặc tên đề..." oninput="filterSearch()"
+                                style="margin:0; flex:1;">
+                            <span id="search-count" style="color:#888; font-size:13px; white-space:nowrap;"></span>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>MSV</th>
+                                    <th>Họ tên</th>
+                                    <th>Tên đề thi</th>
+                                    <th>Điểm</th>
+                                    <th>Thời gian</th>
+                                </tr>
+                            </thead>
+                            <tbody id="search-tbody">
+                                <tr>
+                                    <td colspan="5" style="text-align:center;">Đang tải...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
         </div>
+
     </div>
     <script src="script.js"></script>
 </body>
+
 </html>
