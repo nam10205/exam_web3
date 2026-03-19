@@ -1,9 +1,12 @@
 // admin.js - Admin interface functions
 
 // Sidebar toggle for mobile
-document.addEventListener('DOMContentLoaded', () => {
+function initAdminSidebarToggle() {
     const toggleBtn = document.getElementById('btn-toggle-sidebar');
     const sidebar = document.querySelector('.admin-sidebar');
+
+    if (!toggleBtn || !sidebar) return;
+    if (toggleBtn.dataset.sidebarBound === 'true') return;
 
     let backdrop = document.querySelector('.sidebar-backdrop');
     if (!backdrop) {
@@ -12,30 +15,51 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.appendChild(backdrop);
     }
 
-    if (toggleBtn && sidebar) {
-        toggleBtn.addEventListener('click', () => {
-            sidebar.classList.toggle('active');
-            backdrop.classList.toggle('active');
-            toggleBtn.classList.toggle('hidden');
-        });
+    toggleBtn.dataset.sidebarBound = 'true';
 
-        backdrop.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-            backdrop.classList.remove('active');
+    const closeSidebar = () => {
+        sidebar.classList.remove('active');
+        backdrop.classList.remove('active');
+        toggleBtn.classList.remove('hidden');
+    };
+
+    const openSidebar = () => {
+        sidebar.classList.add('active');
+        backdrop.classList.add('active');
+        toggleBtn.classList.add('hidden');
+    };
+
+    const syncSidebarState = () => {
+        if (window.innerWidth > 768) {
+            closeSidebar();
+        } else if (!sidebar.classList.contains('active')) {
             toggleBtn.classList.remove('hidden');
-        });
+            backdrop.classList.remove('active');
+        }
+    };
 
-        document.querySelectorAll('.admin-nav a').forEach(link => {
-            link.addEventListener('click', () => {
-                if (window.innerWidth <= 768) {
-                    sidebar.classList.remove('active');
-                    backdrop.classList.remove('active');
-                    toggleBtn.classList.remove('hidden');
-                }
-            });
+    toggleBtn.addEventListener('click', () => {
+        if (sidebar.classList.contains('active')) closeSidebar();
+        else openSidebar();
+    });
+
+    backdrop.addEventListener('click', closeSidebar);
+
+    document.querySelectorAll('.admin-nav a').forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth <= 768) closeSidebar();
         });
-    }
-});
+    });
+
+    window.addEventListener('resize', syncSidebarState);
+    syncSidebarState();
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAdminSidebarToggle);
+} else {
+    initAdminSidebarToggle();
+}
 
 function showAdminPage(pageId) {
     document.querySelectorAll('.admin-page').forEach(p => p.classList.remove('active'));
