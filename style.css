@@ -6,8 +6,8 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Google Sans', sans-serif; }
-body { background-color: var(--bg-color); color: var(--text-color); }
-.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+body { background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; }
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; width: 100%; }
 
 /* Nút bấm & Tiêu đề */
 .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 500; transition: 0.2s; }
@@ -56,7 +56,7 @@ header { background: linear-gradient(135deg, var(--dark-red), var(--primary-red)
 .badge.free { background: #e8f5e9; color: #2e7d32; }
 .badge.scheduled { background: #fff3e0; color: #ef6c00; }
 .exam-meta { color: #666; font-size: 14px; margin-bottom: 15px; line-height: 1.8; }
-.quiz-header { position: sticky; top: 0; z-index: 100; background: var(--bg-color); padding: 10px 0;}
+.quiz-header { position: sticky; top: 0; z-index: 100; background: var(--dark-red); padding: 10px 0;}
 .timer { font-size: 20px; font-weight: bold; background: rgba(0,0,0,0.1); padding: 5px 15px; border-radius: 20px; display: inline-block; margin: 0 15px;}
 .question-card { background: var(--white); padding: 25px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 20px; }
 .question-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; }
@@ -109,9 +109,61 @@ header { background: linear-gradient(135deg, var(--dark-red), var(--primary-red)
 .qb-option-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .qb-option-row input[type="radio"] { transform: scale(1.3); accent-color: var(--correct-color); cursor: pointer; }
 
+/* Sidebar toggle button */
+.btn-toggle-sidebar { background: var(--primary-red); color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-size: 16px; position: fixed; top: 20px; left: 20px; z-index: 500; transition: opacity 0.3s ease; }
+.btn-toggle-sidebar:hover { background: var(--dark-red); }
+.btn-toggle-sidebar.hidden { opacity: 0; pointer-events: none; }
+
+/* Sidebar overlay backdrop for mobile */
+.sidebar-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; display: none; }
+.sidebar-backdrop.active { display: block; }
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .container { padding: 15px; }
+    header { padding: 15px 15px !important; }
+    #home-page header { padding: 0 15px 0 0 !important; }
+    .grid-container { grid-template-columns: 1fr; gap: 15px; }
+    .question-card { padding: 15px; }
+    .timer { padding: 5px 10px; font-size: 14px; margin: 0 10px; }
+    .quiz-header { padding: 10px 15px; }
+    .result-summary { padding: 20px; }
+    .statistics { flex-wrap: wrap; gap: 10px; }
+    .stat-card { padding: 20px; }
+    .form-card { padding: 15px; }
+    .auth-box { padding: 25px; }
+    
+    #admin-layout { flex-direction: column; }
+    .admin-sidebar { position: fixed; left: 0; top: 0; height: 100vh; z-index: 1000; transform: translateX(-100%); transition: transform 0.3s ease; width: 240px; max-width: 85vw; }
+    .admin-sidebar.active { transform: translateX(0); }
+    .admin-main { margin-left: 0; padding: 15px; padding-top: 80px; width: 100%; overflow-x: hidden; }
+    #btn-toggle-sidebar { display: block !important; }
+    .admin-header-flex { margin-top: 0; }
+    .admin-table { font-size: 12px; }
+    .admin-table th, .admin-table td { padding: 8px; }
+    .stat-card { flex-direction: column; text-align: center; }
+    .admin-header-flex { flex-wrap: wrap; gap: 10px; }
+}
+
+@media (max-width: 480px) {
+    .container { padding: 10px; }
+    header { padding: 10px 10px !important; }
+    #home-page header { padding: 0 10px 0 0 !important; }
+    #home-page .logo img { height: 60px; }
+    .btn { padding: 8px 15px; font-size: 13px; }
+    .grid-container { gap: 10px; }
+    .question-card { padding: 12px; }
+    .quiz-header { padding: 8px 10px; }
+    .auth-box { padding: 20px; }
+    .admin-main { padding: 10px; padding-top: 70px; }
+    .admin-table th, .admin-table td { padding: 6px; font-size: 11px; }
+    .stat-card { padding: 15px; gap: 10px; }
+    .form-card { padding: 12px; }
+}
+
 /* Print hide */
 @media print {
-    .admin-sidebar, .btn, .admin-header-flex { display: none !important; }
+    .admin-sidebar, .btn, .admin-header-flex, .btn-toggle-sidebar { display: none !important; }
     .admin-main, #admin-layout { height: auto; overflow: visible; background: white; padding: 0; }
     .form-card { box-shadow: none; border: 1px solid #ccc; }
 }

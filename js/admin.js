@@ -1,4 +1,45 @@
 // admin.js - Admin interface functions
+
+// Sidebar toggle for mobile
+document.addEventListener('DOMContentLoaded', () => {
+    const toggleBtn = document.getElementById('btn-toggle-sidebar');
+    const sidebar = document.querySelector('.admin-sidebar');
+    
+    // Create backdrop overlay
+    let backdrop = document.querySelector('.sidebar-backdrop');
+    if(!backdrop) {
+        backdrop = document.createElement('div');
+        backdrop.className = 'sidebar-backdrop';
+        document.body.appendChild(backdrop);
+    }
+    
+    if(toggleBtn && sidebar) {
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            backdrop.classList.toggle('active');
+            toggleBtn.classList.toggle('hidden');
+        });
+        
+        // Close sidebar when clicking on backdrop
+        backdrop.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            backdrop.classList.remove('active');
+            toggleBtn.classList.remove('hidden');
+        });
+        
+        // Close sidebar when clicking on nav links
+        document.querySelectorAll('.admin-nav a').forEach(link => {
+            link.addEventListener('click', () => {
+                if(window.innerWidth <= 768) {
+                    sidebar.classList.remove('active');
+                    backdrop.classList.remove('active');
+                    toggleBtn.classList.remove('hidden');
+                }
+            });
+        });
+    }
+});
+
 function showAdminPage(pageId) {
     document.querySelectorAll('.admin-page').forEach(p => p.classList.remove('active'));
     document.getElementById(pageId).classList.add('active');
