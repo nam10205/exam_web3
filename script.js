@@ -1,8 +1,24 @@
-// Main script file - loads all modules
-// Load modules in dependency order
-document.write('<script src="js/utils.js"></script>');
-document.write('<script src="js/data.js"></script>');
-document.write('<script src="js/auth.js"></script>');
-document.write('<script src="js/student.js"></script>');
-document.write('<script src="js/admin.js"></script>');
-document.write('<script src="js/chart.js"></script>');
+
+const scripts = [
+    "js/utils.js",
+    "js/data.js",
+    "js/auth.js",
+    "js/student.js",
+    "js/admin.js",
+    "js/chart.js"
+];
+
+function loadScripts(index = 0) {
+    if (index >= scripts.length) return;
+
+    const script = document.createElement("script");
+    script.src = scripts[index];
+    script.onload = () => loadScripts(index + 1);
+
+    document.body.appendChild(script);
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    loadScripts();
+});
