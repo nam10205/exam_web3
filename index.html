@@ -68,6 +68,18 @@
                 </header>
                 <main class="container">
                     <h3 class="section-title">Danh sách bài thi</h3>
+                    <div class="exam-filter-bar">
+                        <div class="input-group exam-search-group">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="exam-search" placeholder="Tìm theo tên bài thi...">
+                        </div>
+                        <select id="exam-type-filter" class="admin-input">
+                            <option value="all">Tất cả loại bài thi</option>
+                            <option value="Luyện tập">Luyện tập</option>
+                            <option value="Giữa kỳ">Giữa kỳ</option>
+                            <option value="Cuối kỳ">Cuối kỳ</option>
+                        </select>
+                    </div>
                     <div id="exam-list" class="grid-container"></div>
                 </main>
             </section>
@@ -92,6 +104,7 @@
                     <div class="result-summary">
                         <h2>Kết Quả Bài Thi</h2>
                         <div class="score-circle"><span id="score-text">0/10</span><small>Điểm số</small></div>
+                        <p id="score-detail" style="margin-top: 8px; color: #555;"></p>
                         <div class="statistics">
                             <div class="stat-item correct"><i class="fas fa-check-circle"></i> Đúng: <span id="stat-correct">0</span></div>
                             <div class="stat-item wrong"><i class="fas fa-times-circle"></i> Sai: <span id="stat-wrong">0</span></div>
@@ -99,6 +112,7 @@
                         </div>
                     </div>
                     <h3 class="section-title">Chi tiết bài làm</h3>
+                    <div id="result-detail-container"></div>
                     <div id="review-container"></div>
                 </main>
             </section>
@@ -112,7 +126,7 @@
                     <a href="#" onclick="showAdminPage('admin-exams')" id="nav-admin-exams" class="active"><i class="fas fa-file-alt"></i> Quản lý Kỳ thi</a>
                     <a href="#" onclick="showAdminPage('admin-users')" id="nav-admin-users"><i class="fas fa-users"></i> Quản lý Sinh viên</a>
                     <a href="#" onclick="showAdminPage('admin-stats')" id="nav-admin-stats"><i class="fas fa-chart-bar"></i> Thống kê</a>
-                    <a href="#" onclick="showAdminPage('admin-student-detail')" id="nav-admin-student-detail"><i class="fas fa-search"></i> Tra cứu Kết quả</a>
+                    <a href="#" onclick="showAdminPage('admin-search')" id="nav-admin-search"><i class="fas fa-search"></i> Tra cứu Kết quả</a>
                 </nav>
                 <button class="btn btn-outline btn-logout" style="margin: 20px; width: calc(100% - 40px); border-color: rgba(255,255,255,0.3);"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
             </aside>
@@ -143,7 +157,7 @@
                         <button class="btn btn-primary" onclick="openExamForm()"><i class="fas fa-plus"></i> Tạo Kỳ Thi Mới</button>
                     </div>
                     <table class="admin-table">
-                        <thead><tr><th>Tên Kỳ Thi</th><th>Loại</th><th>Trạng thái</th><th>Thời gian</th><th>Số câu</th><th>Thao tác</th></tr></thead>
+                        <thead><tr><th>Tên Kỳ Thi</th><th>Loại</th><th>Số câu</th><th>Thao tác</th></tr></thead>
                         <tbody id="admin-exam-tbody"></tbody>
                     </table>
                 </section>
@@ -160,7 +174,7 @@
                         <h3>Thông tin chung</h3>
                         <div style="display: flex; gap: 15px; margin-top: 15px;">
                             <input type="text" id="input-exam-title" placeholder="Tên bài thi..." class="admin-input" style="flex: 2;">
-                            <select id="input-exam-type" class="admin-input" style="flex: 1;"><option value="Luyện tập">Luyện tập</option><option value="Giữa kỳ">Giữa kỳ</option><option value="Cuối kỳ">Cuối kỳ</option></select>
+                            <select id="input-exam-type" class="admin-input" style="flex: 1;"><option value="1">Luyện tập</option><option value="2">Giữa kỳ</option><option value="3">Cuối kỳ</option></select>
                             <select id="input-exam-status" class="admin-input" style="flex: 1;"><option value="free">Truy cập tự do</option><option value="scheduled">Có thời hạn</option></select>
                             <input type="number" id="input-exam-time" placeholder="Phút" class="admin-input" style="flex: 0.5;" min="1">
                         </div>
@@ -169,7 +183,6 @@
                         <div class="admin-header-flex" style="margin-bottom: 10px;">
                             <h3>Danh sách Câu hỏi</h3>
                             <div>
-                                <button class="btn btn-warning btn-sm" onclick="importExcelMock()"><i class="fas fa-file-excel"></i> Nhập từ Excel</button>
                                 <button class="btn btn-primary btn-sm" onclick="addQuestionBuilder()"><i class="fas fa-plus"></i> Thêm Câu Hỏi</button>
                             </div>
                         </div>
@@ -180,10 +193,9 @@
                 <section id="admin-users" class="admin-page">
                     <div class="admin-header-flex">
                         <h2 class="section-title">Quản lý Sinh Viên</h2>
-                        <button class="btn btn-primary" onclick="openUserForm()"><i class="fas fa-user-plus"></i> Thêm Sinh Viên</button>
                     </div>
                     <table class="admin-table">
-                        <thead><tr><th>MSSV</th><th>Họ Tên</th><th>Tên đăng nhập</th><th>Lượt thi</th><th>Thao tác</th></tr></thead>
+                        <thead><tr><th>MSSV</th><th>Họ Tên</th><th>Tên đăng nhập</th><th>Thao tác</th></tr></thead>
                         <tbody id="admin-user-tbody"></tbody>
                     </table>
                 </section>
@@ -207,43 +219,30 @@
 
                 <section id="admin-stats" class="admin-page">
                     <div class="admin-header-flex">
-                        <h2 class="section-title">Thống Kê Tổng Hợp (Dữ liệu mẫu)</h2>
-                        <div>
-                            <button class="btn btn-warning" onclick="alert('Đã xuất báo cáo ra file Excel!')"><i class="fas fa-file-excel"></i> Xuất Excel</button>
-                            <button class="btn btn-outline" style="color:var(--primary-red); border-color:var(--primary-red)" onclick="window.print()"><i class="fas fa-file-pdf"></i> Xuất PDF</button>
-                        </div>
+                        <h2 class="section-title">Thống Kê Tổng Hợp</h2>
                     </div>
-                    <div class="filter-box" style="margin-bottom: 20px; display: flex; gap: 15px;">
-                        <select class="admin-input" style="width: 200px;"><option>Tất cả kỳ thi</option><option>HTML Cơ bản</option></select>
-                        <input type="date" class="admin-input" style="width: 200px;">
+                    <div class="grid-container" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 20px;">
+                        <div class="stat-card"><div><h3>Tổng lượt thi</h3><p id="stat-total-attempts">—</p></div></div>
+                        <div class="stat-card"><div><h3>Điểm trung bình</h3><p id="stat-avg-score">—</p></div></div>
+                        <div class="stat-card"><div><h3>Điểm cao nhất</h3><p id="stat-highest">—</p></div></div>
+                        <div class="stat-card"><div><h3>Điểm thấp nhất</h3><p id="stat-lowest">—</p></div></div>
                     </div>
                     <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: var(--shadow); margin-bottom: 30px;">
                         <canvas id="scoreChart" height="80"></canvas>
                     </div>
-                    <table class="admin-table">
-                        <thead><tr><th>Tên Kỳ Thi</th><th>Tổng lượt thi</th><th>Tỷ lệ hoàn thành</th><th>Điểm TB</th></tr></thead>
-                        <tbody>
-                            <tr><td>Bài tập Demo: HTML Cơ bản</td><td>150</td><td>98%</td><td>8.2 / 10</td></tr>
-                            <tr><td>Giữa kỳ: Javascript</td><td>120</td><td>95%</td><td>7.5 / 10</td></tr>
-                        </tbody>
-                    </table>
                 </section>
 
-                <section id="admin-student-detail" class="admin-page">
-                    <h2 class="section-title">Tra cứu Kết Quả Sinh Viên (Dữ liệu mẫu)</h2>
-                    <div style="margin-bottom: 20px; max-width: 400px; position: relative;">
-                        <i class="fas fa-search" style="position: absolute; left: 15px; top: 12px; color: #888;"></i>
-                        <input type="text" class="admin-input" placeholder="Nhập tên hoặc MSSV..." style="padding-left: 40px; width: 100%;">
-                    </div>
+                <section id="admin-search" class="admin-page">
+                    <h2 class="section-title">Tra cứu Kết Quả Sinh Viên</h2>
                     <div class="form-card">
-                        <h3>Sinh viên: Nguyễn Văn A (SV001)</h3>
-                        <button class="btn btn-outline" style="color:var(--primary-red); border-color:var(--primary-red); margin-top: 10px;" onclick="window.print()"><i class="fas fa-print"></i> In bảng điểm</button>
-                        <h4 style="margin-top: 20px; margin-bottom: 10px;">Lịch sử thi:</h4>
+                        <div style="display:flex; gap:10px; align-items:center; margin-bottom:16px;">
+                            <input type="text" id="search-filter" class="admin-input" placeholder="Lọc theo MSSV, họ tên hoặc tên đề..." oninput="filterSearch()" style="margin:0; flex:1;">
+                            <span id="search-count" style="color:#888; font-size:13px; white-space:nowrap;"></span>
+                        </div>
                         <table class="admin-table">
-                            <thead><tr><th>Ngày thi</th><th>Kỳ thi</th><th>Trạng thái</th><th>Điểm số</th><th>Chi tiết</th></tr></thead>
-                            <tbody>
-                                <tr><td>10/10/2023</td><td>HTML Cơ bản</td><td><span class="badge free">Hoàn thành</span></td><td><strong>9.0</strong></td><td><button class="btn btn-primary btn-sm" onclick="alert('Chi tiết: Câu 1 (Đúng), Câu 2 (Đúng). Giải thích: Đáp án đúng vì...')">Xem chi tiết</button></td></tr>
-                                <tr><td>15/10/2023</td><td>Cuối kỳ: ReactJS</td><td><span class="badge scheduled" style="background:#ffebee; color:var(--wrong-color)">Chưa đạt</span></td><td><strong>4.0</strong></td><td><button class="btn btn-primary btn-sm" onclick="alert('Chi tiết bài thi.')">Xem chi tiết</button></td></tr>
+                            <thead><tr><th>MSSV</th><th>Họ tên</th><th>Tên kỳ thi</th><th>Điểm</th><th>Thời gian</th></tr></thead>
+                            <tbody id="search-tbody">
+                                <tr><td colspan="5" style="text-align:center;">Đang tải...</td></tr>
                             </tbody>
                         </table>
                     </div>

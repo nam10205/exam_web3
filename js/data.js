@@ -1,14 +1,7 @@
 // data.js - Data structures and constants
-let EXAMS = [
-    { id: 1, title: 'Bài tập Demo: HTML Cơ bản', type: 'Luyện tập', status: 'free', time: 5, questionsCount: 2 }
-];
+let EXAMS = [];
 
-let QUESTIONS_DB = {
-    1: [
-        { text: "Thẻ tạo liên kết trong HTML?", options: ["<a>", "<b>", "<link>", "<nav>"], correct: 0 },
-        { text: "HTML là viết tắt của?", options: ["Hyper Text", "Hyperlinks", "Hyper Text Markup Language", "Không có đáp án đúng"], correct: 2 }
-    ]
-};
+let QUESTIONS_DB = {};
 
 let USERS_DB = [
     { id: 'SV001', name: 'Nguyễn Văn A', username: 'sinhvien', password: '123', attempts: 5 },
