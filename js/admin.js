@@ -317,6 +317,9 @@
                 <tr>
                     <td>${u.id}</td><td>${u.name}</td><td>${u.username}</td>
                     <td>
+                        <button class="btn btn-warning btn-sm" onclick="openUserForm('${u.username}')" style="margin-right:6px;">
+                            <i class="fas fa-edit"></i> Sửa
+                        </button>
                         <button class="btn btn-sm" style="background:var(--wrong-color);color:#fff" onclick="deleteUser('${u.username}')">
                             <i class="fas fa-trash"></i> Xóa
                         </button>
@@ -324,6 +327,106 @@
                 </tr>
             `).join('');
         } catch (e) { console.error("Lỗi tải danh sách user"); }
+    };
+
+    async function updateUserViaApi(oldUsername, payload) {
+        const query = `id=${encodeURIComponent(payload.id)}&name=${encodeURIComponent(payload.name)}&username=${encodeURIComponent(payload.username)}&pwd=${encodeURIComponent(payload.password)}`;
+        const candidates = [
+            { method: 'PUT', url: `${window.API_BASE}/updateuser/?old_username=${encodeURIComponent(oldUsername)}&${query}` },
+            { method: 'PUT', url: `${window.API_BASE}/updateuser/?username=${encodeURIComponent(oldUsername)}&${query}` },
+            {
+                method: 'PUT',
+                url: `${window.API_BASE}/users/${encodeURIComponent(oldUsername)}/`,
+                body: JSON.stringify(payload),
+                headers: { 'Content-Type': 'application/json' }
+            },
+            {
+                method: 'PATCH',
+                url: `${window.API_BASE}/users/${encodeURIComponent(oldUsername)}/`,
+                body: JSON.stringify(payload),
+                headers: { 'Content-Type': 'application/json' }
+            }
+        ];
+
+        let lastError = null;
+        for (const req of candidates) {
+            try {
+                const res = await fetch(req.url, {
+                    method: req.method,
+                    headers: req.headers,
+                    body: req.body
+                });
+                if (res.ok) return true;
+                lastError = await res.text();
+            } catch (error) {
+                lastError = error.message;
+            }
+        }
+        throw new Error(lastError || 'Không gọi được API cập nhật user');
+    }
+
+    window.openUserForm = async (username) => {
+        if (!username) return;
+        try {
+            const res = await fetch(`${window.API_BASE}/users/`);
+            const users = await res.json();
+            const user = users.find(u => u.username === username);
+            if (!user) {
+                alert('Không tìm thấy sinh viên để chỉnh sửa.');
+                return;
+            }
+
+            const formTitle = document.getElementById('form-user-title');
+            if (formTitle) formTitle.innerText = 'Chỉnh sửa Sinh Viên';
+
+            const oldUsernameInput = document.getElementById('input-u-oldusername');
+            const idInput = document.getElementById('input-u-id');
+            const nameInput = document.getElementById('input-u-name');
+            const usernameInput = document.getElementById('input-u-username');
+            const passwordInput = document.getElementById('input-u-password');
+
+            if (oldUsernameInput) oldUsernameInput.value = user.username || '';
+            if (idInput) idInput.value = user.id || '';
+            if (nameInput) nameInput.value = user.name || '';
+            if (usernameInput) usernameInput.value = user.username || '';
+            if (passwordInput) passwordInput.value = '';
+
+            showAdminPage('admin-user-form');
+        } catch (error) {
+            alert('Lỗi tải dữ liệu sinh viên để sửa.');
+        }
+    };
+
+    window.saveUser = async () => {
+        const oldUsername = document.getElementById('input-u-oldusername')?.value.trim();
+        const id = document.getElementById('input-u-id')?.value.trim();
+        const name = document.getElementById('input-u-name')?.value.trim();
+        const username = document.getElementById('input-u-username')?.value.trim();
+        const password = document.getElementById('input-u-password')?.value || '';
+
+        if (!oldUsername) {
+            alert('Chức năng này chỉ dùng để sửa sinh viên đã có.');
+            return;
+        }
+        if (!id || !name || !username) {
+            alert('Vui lòng nhập đầy đủ MSSV, họ tên và tên đăng nhập.');
+            return;
+        }
+
+        const payload = {
+            id,
+            name,
+            username,
+            password
+        };
+
+        try {
+            await updateUserViaApi(oldUsername, payload);
+            alert('Cập nhật sinh viên thành công!');
+            showAdminPage('admin-users');
+        } catch (error) {
+            alert('Cập nhật thất bại. Nếu backend dùng endpoint khác, gửi mình endpoint để map chính xác.');
+        }
     };
 
     window.deleteUser = async (uname) => {

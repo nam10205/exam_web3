@@ -61,7 +61,7 @@ header { background: linear-gradient(135deg, var(--dark-red), var(--primary-red)
 .badge.free { background: #e8f5e9; color: #2e7d32; }
 .badge.scheduled { background: #fff3e0; color: #ef6c00; }
 .exam-meta { color: #666; font-size: 14px; margin-bottom: 15px; line-height: 1.8; }
-.quiz-header { position: sticky; top: 0; z-index: 100; background: var(--dark-red); padding: 10px 0;}
+.quiz-header { position: sticky; top: 0; z-index: 100; background: var(--dark-red); padding: 10px 28px;}
 .timer { font-size: 20px; font-weight: bold; background: rgba(0,0,0,0.1); padding: 5px 15px; border-radius: 20px; display: inline-block; margin: 0 15px;}
 .question-card { background: var(--white); padding: 25px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 20px; }
 .question-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; }
